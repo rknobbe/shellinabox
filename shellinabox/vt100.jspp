@@ -83,7 +83,7 @@
 #define EStitle        17
 #define ESss2          18
 #define ESss3          19
-#define ESVTETitle     20
+#define ESVTEtitle     20
 
 #define ATTR_DEFAULT   0x60F0
 #define ATTR_REVERSE   0x0100
@@ -1604,7 +1604,10 @@ VT100.prototype.updateWidth = function() {
       this.terminalWidth = Math.floor(this.console[this.currentScreen].offsetWidth/this.cursorWidth*this.scale);
     }
   } else {
-    this.terminalWidth = Math.floor(this.console[this.currentScreen].offsetWidth/this.cursorWidth*this.scale);
+    if ("ActiveXObject" in window)
+      this.terminalWidth = Math.floor(this.console[this.currentScreen].offsetWidth/this.cursorWidth*this.scale*0.95);
+    else
+      this.terminalWidth = Math.floor(this.console[this.currentScreen].offsetWidth/this.cursorWidth*this.scale);
   }
 
   return this.terminalWidth;
@@ -2841,7 +2844,7 @@ VT100.prototype.handleKey = function(event) {
       ch                              = part1                                 +
                                        ((event.shiftKey             ? 1 : 0)  +
                                         (event.altKey|event.metaKey ? 2 : 0)  +
-                                        (event.ctrlKey              ? 4 : 0)) +
+                                        (event.ctrlKey              ? 4 : 0) + 1) +
                                         part2;
     } else if (ch.length == 1 && (event.altKey || event.metaKey)
                && !this.disableAlt) {
@@ -3901,7 +3904,7 @@ VT100.prototype.csim = function() {
     case 27: this.attr &= ~ ATTR_REVERSE;                              break;
     case 38:
       if (this.npar >= (i+2) && this.par[i+1] == 5) {
-        // Foreground color for extended color mode (256 colors). Escape code is formated
+        // Foreground color for extended color mode (256 colors). Escape code is formatted
         // as: ESC 38; 5; 0-255. Last parameter is color code in range [0-255]. This is
         // not VT100 standard.
         this.attrFg     = (this.par[i+2] >= 0 && this.par[i+2] <= 255) ? this.par[i+2] : false;
@@ -3917,7 +3920,7 @@ VT100.prototype.csim = function() {
       break;
     case 48:
       if (this.npar >= (i+2) && this.par[i+1] == 5) {
-        // Background color for extended color mode (256 colors). Escape code is formated
+        // Background color for extended color mode (256 colors). Escape code is formatted
         // as: ESC 48; 5; 0-255. Last parameter is color code in range [0-255]. This is
         // not VT100 standard.
         this.attrBg     = (this.par[i+2] >= 0 && this.par[i+2] <= 255) ? this.par[i+2] : false;
